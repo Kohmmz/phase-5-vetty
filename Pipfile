@@ -1,0 +1,30 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+flask-sqlalchemy = "*"
+flask-jwt-extended = "*"
+python-dotenv = "*"
+psycopg2-binary = "*"
+flask-migrate = "*"
+flask-cors = "*"
+flask-bcrypt = "*"
+sqlalchemy-serializer = "*"
+sendgrid = "*"
+cloudinary = "*"
+flask-restful = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-flask = "*"
+sqlalchemy = "*"
+marshmallow = "*"
+marshmallow-sqlalchemy = "*"
+faker = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
