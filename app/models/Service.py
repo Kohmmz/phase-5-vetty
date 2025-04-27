@@ -13,4 +13,6 @@ class Service(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default =datetime.utcnow, onupdate=datetime.utcnow)
     
-    # Define any relationships here
+    #relationships
+    order = db.relationship('Order', back_populates ='service', cascade='all, delete-orphan')
+    serviceRequest = db.relationship('ServiceRequest', back_populates ='service', cascade='all, delete-orphan')
