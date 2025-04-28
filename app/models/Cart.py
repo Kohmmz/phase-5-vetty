@@ -11,6 +11,6 @@ class Cart(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 #relationships
-    User = db.relationship('User', back_populates='cart')
-    Products = db.relationship('Product', secondary='cart_items', back_populates='carts')
-    Service = db.relationship('Service', secondary='cart_items', back_populates='carts')
+    user = db.relationship('User', back_populates='cart')
+    products = db.relationship('Product', secondary='cart_items', back_populates='carts')
+    services = db.relationship('Service', secondary='cart_items', back_populates='carts')
