@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app import db
 from app.models.ServiceRequest import ServiceRequest
-from app.schemas.Servicerequest-schemas import ServiceRequestSchema
+from app.schemas.Servicerequest_schemas import ServiceRequestSchema
 
 # from app.models.Service import Service
 service_request_bp = Blueprint('service_request', __name__, url_prefix='/service_requests')
