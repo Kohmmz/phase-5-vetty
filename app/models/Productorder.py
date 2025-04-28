@@ -13,4 +13,4 @@ class ProductOrder(db.Model):
     product = db.relationship('Product', backref=db.backref('product_orders', lazy=True))
 
     def __repr__(self):
-        return f'<ProductOrder Order ID: {self.order_id} Product ID: {self.product_id}>'
+        return f"<ProductOrder Order ID: {self.order_id} Product ID: {self.product_id} Quantity: {self.quantity}>"
