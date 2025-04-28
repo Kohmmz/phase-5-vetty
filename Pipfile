@@ -24,7 +24,6 @@ marshmallow = "*"
 marshmallow-sqlalchemy = "*"
 faker = "*"
 
-
 [dev-packages]
 
 [requires]

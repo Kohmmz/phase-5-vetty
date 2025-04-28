@@ -1,60 +1,57 @@
 from flask import Blueprint, request, jsonify, abort
 from app import db
 from models import Service
+from app.schemas.Service_schemas import service_schema, services_schema
+from marshmallow.exceptions import ValidationError
 
 service_bp = Blueprint('service_bp', __name__)
 
 @service_bp.route('/services', methods=['GET'])
 def get_services():
     services = Service.query.all()
-    return jsonify([{
-        'id': s.id,
-        'name': s.name,
-        'price': s.price,
-        'description': s.description,
-        'created_at': s.created_at,
-        'updated_at': s.updated_at
-    } for s in services]), 200
+    return jsonify(services_schema.dump(services)), 200  # Serialize and return as JSON
 
 @service_bp.route('/services/<int:service_id>', methods=['GET'])
 def get_service(service_id):
     service = Service.query.get_or_404(service_id)
-    return jsonify({
-        'id': service.id,
-        'name': service.name,
-        'price': service.price,
-        'description': service.description,
-        'created_at': service.created_at,
-        'updated_at': service.updated_at
-    }), 200
+    return jsonify(service_schema.dump(service)), 200  # Serialize and return as JSON
 
 @service_bp.route('/services', methods=['POST'])
 def create_service():
-    data = request.get_json()
     try:
-        new_service = Service(
-            name=data['name'],
-            price=data['price'],
-            description=data.get('description')
-        )
+        # Deserialize and validate incoming JSON data
+        service_data = service_schema.load(request.json)
+        # Create a new Service instance
+        new_service = Service(**service_data)
         db.session.add(new_service)
         db.session.commit()
-        return jsonify({'message': 'Service created', 'id': new_service.id}), 201
-    except KeyError as e:
-        return jsonify({'error': f'Missing field: {str(e)}'}), 400
+        return jsonify({'message': 'Service created', 'id': new_service.id}), 201  # Return the created service
+    except ValidationError as e:
+        # Handle validation errors
+        return jsonify({'error': e.messages}), 400
+    except Exception as e:
+        # Handle other errors
+        return jsonify({'error': str(e)}), 400
 
 @service_bp.route('/services/<int:service_id>', methods=['PUT', 'PATCH'])
 def update_service(service_id):
     service = Service.query.get_or_404(service_id)
-    data = request.get_json()
+    try:
+        # Deserialize and validate incoming JSON data
+        service_data = service_schema.load(request.json)
+        # Update service attributes dynamically
+        for key, value in service_data.items():
+            setattr(service, key, value)
+        db.session.commit()
+        return jsonify({'message': 'Service updated'}), 200  # Return a success message
+    except ValidationError as e:
+        # Handle validation errors
+        return jsonify({'error': e.messages}), 400
+    except Exception as e:
+        # Handle other errors
+        return jsonify({'error': str(e)}), 400
 
-    service.name = data.get('name', service.name)
-    service.price = data.get('price', service.price)
-    service.description = data.get('description', service.description)
-
-    db.session.commit()
-    return jsonify({'message': 'Service updated'}), 200
-
+# Route to delete a service
 @service_bp.route('/services/<int:service_id>', methods=['DELETE'])
 def delete_service(service_id):
     service = Service.query.get_or_404(service_id)
