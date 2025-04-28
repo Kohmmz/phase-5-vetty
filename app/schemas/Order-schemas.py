@@ -7,4 +7,5 @@ class OrderSchema(Schema):
     user_id = fields.Int(required=True)
     status = fields.Str(required=True)
     timestamp = fields.DateTime(dump_only=True)
+    total_price = fields.Float(dump_only=True)
     order_items = fields.Nested('OrderItemSchema', many=True, dump_only=True)

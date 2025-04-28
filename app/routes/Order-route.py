@@ -15,34 +15,54 @@ def place_order():
     user_id = get_jwt_identity()
     data = request.get_json()
 
-    # ton Validate stock availability
     items = data.get('items', [])
     if not items:
         return jsonify({'error': 'No items provided'}), 400
 
+    # Validate stock availability for products
     for item in items:
-        product = Product.query.get(item['product_id'])
-        if not product:
-            return jsonify({'error': f"Product id {item['product_id']} not found"}), 404
-        if product.stock < item['quantity']:
-            return jsonify({'error': f"Insufficient stock for product id {item['product_id']}"}), 400
+        if 'product_id' in item and item['product_id'] is not None:
+            product = Product.query.get(item['product_id'])
+            if not product:
+                return jsonify({'error': f"Product id {item['product_id']} not found"}), 404
+            if product.stock < item['quantity']:
+                return jsonify({'error': f"Insufficient stock for product id {item['product_id']}"}), 400
 
     # Creating order
     order = Order(user_id=user_id, status='pending')
     db.session.add(order)
     db.session.flush()  # to get order with.id
 
-    # Creating order items and reduce stock
+    # Calculate total price including products and services
+    total_price = 0
     for item in items:
-        order_item = OrderItem(order_id=order.id, product_id=item['product_id'], quantity=item['quantity'])
-        db.session.add(order_item)
-        product = Product.query.get(item['product_id'])
-        product.stock -= item['quantity']
+        if 'product_id' in item and item['product_id'] is not None:
+            product = Product.query.get(item['product_id'])
+            total_price += product.price * item['quantity']
+        elif 'service_id' in item and item['service_id'] is not None:
+            service = Service.query.get(item['service_id'])
+            if not service:
+                return jsonify({'error': f"Service id {item['service_id']} not found"}), 404
+            total_price += service.price * item['quantity']
+
+    order.total_price = total_price
+
+    # Creating order items and reduce stock for products
+    for item in items:
+        if 'product_id' in item and item['product_id'] is not None:
+            order_item = OrderItem(order_id=order.id, product_id=item['product_id'], quantity=item['quantity'])
+            db.session.add(order_item)
+            product = Product.query.get(item['product_id'])
+            product.stock -= item['quantity']
+        elif 'service_id' in item and item['service_id'] is not None:
+            order_item = OrderItem(order_id=order.id, service_id=item['service_id'], quantity=item['quantity'])
+            db.session.add(order_item)
 
     db.session.commit()
 
     order_schema = OrderSchema()
     return order_schema.jsonify(order), 201
+
 
 @order_bp.route('/', methods=['GET'])
 @jwt_required()
