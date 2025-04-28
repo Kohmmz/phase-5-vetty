@@ -23,6 +23,7 @@ sqlalchemy = "*"
 marshmallow = "*"
 marshmallow-sqlalchemy = "*"
 faker = "*"
+flask-restfull = "*"
 
 [dev-packages]
 
