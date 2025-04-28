@@ -1,5 +1,5 @@
 from flask import Flask
-from app import db#Not set up yet
+from app import db
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
@@ -13,6 +13,6 @@ class Service(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default =datetime.utcnow, onupdate=datetime.utcnow)
     
-    #relationships
+
     order = db.relationship('Order', back_populates ='service', cascade='all, delete-orphan')
     serviceRequest = db.relationship('ServiceRequest', back_populates ='service', cascade='all, delete-orphan')

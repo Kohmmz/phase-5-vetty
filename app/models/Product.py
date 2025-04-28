@@ -1,5 +1,5 @@
 from flask import Flask
-from app import db#Not set up yet
+from app import db
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
@@ -15,7 +15,7 @@ class Product(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default =datetime.utcnow, onupdate=datetime.utcnow)
     
-    #relationships
+    
     cart = db.relationship('Cart', back_populates ='product', cascade='all, delete-orphan')
     order = db.relationship('Order', back_populates ='product', cascade='all, delete-orphan') 
 
