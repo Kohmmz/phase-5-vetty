@@ -1,17 +1,17 @@
 from datetime import datetime
 from app import db
 
-class Order(db.Model):
-    __tablename__ = 'orders'
+class ServiceRequest(db.Model):
+    __tablename__ = 'service_requests'
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    total_price = db.Column(db.Float, nullable=False, default=0.0)
+    service_id = db.Column(db.Integer, db.ForeignKey('services.id'), nullable=False)
     status = db.Column(db.String(50), nullable=False)
+    appointment_time = db.Column(db.DateTime, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    user = db.relationship('User', back_populates='orders')
-    items = db.relationship('OrderItem', back_populates='order', lazy=True, cascade='all, delete-orphan')
-    payment = db.relationship('Payment', back_populates='order', uselist=False, lazy=True)
+    user = db.relationship('User', back_populates='service_requests')
+    service = db.relationship('Service', back_populates='service_requests')

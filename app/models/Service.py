@@ -4,7 +4,6 @@ from app import db
 class Service(db.Model):
     __tablename__ = 'services'
 
-#    Defining the columns for the services table
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
@@ -13,8 +12,5 @@ class Service(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     # Relationships
-    service_requests = db.relationship('ServiceRequest', backref='service', lazy=True)
-    order_items = db.relationship('OrderItem', backref='service', lazy=True)
-
-    def __repr__(self):
-        return f"<Service id={self.id} name={self.name} price={self.price}>"
+    service_requests = db.relationship('ServiceRequest', back_populates='service', lazy=True)
+    order_items = db.relationship('OrderItem', back_populates='service', lazy=True)
