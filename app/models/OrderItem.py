@@ -1,5 +1,5 @@
 from app import db
-from datetime import datetime
+from sqlalchemy.sql import func
 
 
 class OrderItem(db.Model):
@@ -11,7 +11,7 @@ class OrderItem(db.Model):
     service_id = db.Column(db.Integer, db.ForeignKey('services.id'), nullable=True)
     quantity = db.Column(db.Integer, nullable=False)
     unit_price = db.Column(db.Float, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     # Relationships
     order = db.relationship('Order', back_populates='items')

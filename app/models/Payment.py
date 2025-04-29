@@ -1,5 +1,5 @@
 from app import db
-from datetime import datetime
+from sqlalchemy.sql import func
 
 class Payment(db.Model):
     __tablename__ = 'payments'
@@ -9,7 +9,7 @@ class Payment(db.Model):
     payment_method = db.Column(db.String(50), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(50), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     # Relationships
     order = db.relationship('Order', back_populates='payment')
