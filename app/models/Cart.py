@@ -1,15 +1,14 @@
-from flask import Flask
 from app import db
-from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
 
 class Cart(db.Model):
     __tablename__ = 'carts'
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(),nullable=False)
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now(), nullable=False)
+    
 
     # Relationships
     user = db.relationship('User', back_populates='cart')

@@ -1,8 +1,6 @@
-    
-from flask import Flask
 from app import db
-from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
+
 
 class CartItem(db.Model):
     __tablename__ = 'cart_items'
@@ -12,9 +10,9 @@ class CartItem(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=True)
     service_id = db.Column(db.Integer, db.ForeignKey('services.id'), nullable=True)
     quantity = db.Column(db.Integer, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     # Relationships
     cart = db.relationship('Cart', back_populates='items')
     product = db.relationship('Product', back_populates='cart_items')
-    service = db.relationship('Service', back_populates='service_requests')
+    service = db.relationship('Service', back_populates='cart_items')
