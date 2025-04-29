@@ -1,6 +1,6 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field, validates
 from marshmallow import ValidationError, validate
-from app.models.user import User  # Adjust import path if needed
+from app.models.User import User  # Adjust import path if needed
 from app import db
 
 class UserSchema(SQLAlchemyAutoSchema):

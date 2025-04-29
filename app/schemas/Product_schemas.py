@@ -1,73 +1,48 @@
-from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field, validates
-from marshmallow import ValidationError, validate
-from app.models.Product import Product  # Adjust import path as needed
-from app import db
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field
+from marshmallow import validates, ValidationError, validate
+from app.models.Product import Product  
+from app import db 
 
 class ProductSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Product
-        sqla_session = db.session
         load_instance = True
-        include_fk = True  # Only needed if foreign keys are exposed
-        ordered = True
+        sqla_session = db.session
 
-    # Fields with validation
     id = auto_field(dump_only=True)
 
     name = auto_field(
         required=True,
-        validate=validate.Length(min=1, max=100),
-        error_messages={
-            "required": "Name is required.",
-            "length": "Name must be between 1 and 100 characters."
-        }
-    )
-
-    price = auto_field(
-        required=True,
-        validate=validate.Range(min=0),
-        error_messages={
-            "required": "Price is required.",
-            "range": "Price must be a positive number."
-        }
+        validate=validate.Length(min=3, max=100, error="Name must be between 3 and 100 characters.")
     )
 
     description = auto_field(
-        required=False,
-        validate=validate.Length(max=500),
-        error_messages={"length": "Description cannot exceed 500 characters."}
+        validate=validate.Length(max=255, error="Description can't be longer than 255 characters.")
     )
+
+    price = auto_field(required=True)
 
     category = auto_field(
         required=True,
-        validate=validate.Length(min=1, max=50),
-        error_messages={
-            "required": "Category is required.",
-            "length": "Category must be between 1 and 50 characters."
-        }
+        validate=validate.OneOf(["medicine", "equipment", "supplement"], error="Invalid category.")
     )
 
-    stock_quantity = auto_field(
-        required=True,
-        validate=validate.Range(min=0),
-        error_messages={
-            "required": "Stock quantity is required.",
-            "range": "Stock quantity must be a non-negative integer."
-        }
+    stock_quantity = auto_field(required=True)
+
+    image_url = auto_field(
+        validate=validate.URL(error="Must be a valid URL.")
     )
 
     created_at = auto_field(dump_only=True)
     updated_at = auto_field(dump_only=True)
 
-    # Custom validation for uniqueness
-    @validates('name')
-    def validate_name_unique(self, name):
-        existing_product = Product.query.filter_by(name=name).first()
-        if existing_product:
-            raise ValidationError("A product with this name already exists.")
+    # Custom validation
+    @validates("price")
+    def validate_price(self, value):
+        if value < 0:
+            raise ValidationError("Price must be non-negative.")
 
-    # Optional stricter check on category
-    @validates('category')
-    def validate_category_length(self, category):
-        if len(category) < 3:
-            raise ValidationError("Category must be at least 3 characters long.")
+    @validates("stock_quantity")
+    def validate_stock_quantity(self, value):
+        if value < 0:
+            raise ValidationError("Stock quantity must be non-negative.")
