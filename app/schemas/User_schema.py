@@ -1,66 +1,26 @@
-from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field, validates
-from marshmallow import ValidationError, validate
-from app.models.user import User  # Adjust import path if needed
-from app import db
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from marshmallow import fields, validates, ValidationError
+from app.models.User import User
 
 class UserSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = User
-        sqla_session = db.session
         load_instance = True
-        include_fk = True
-        ordered = True
+        exclude = ("password_hash",)  # Exclude password hash from serialization
 
-    # Fields with validation
-    id = auto_field(dump_only=True)
+    password = fields.String(required=True, load_only=True)
+    confirm_password = fields.String(required=True, load_only=True)
 
-    username = auto_field(
-        required=True,
-        validate=validate.Length(min=3, max=50),
-        error_messages={
-            "required": "Username is required.",
-            "length": "Username must be between 3 and 50 characters."
-        }
-    )
+    @validates("password")
+    def validate_password(self, value):
+        if len(value) < 8:
+            raise ValidationError("Password must be at least 8 characters long.")
+        if not any(char.isdigit() for char in value):
+            raise ValidationError("Password must contain at least one digit.")
+        if not any(char.isupper() for char in value):
+            raise ValidationError("Password must contain at least one uppercase letter.")
 
-    email = auto_field(
-        required=True,
-        validate=validate.Email(error="Invalid email format."),
-        error_messages={
-            "required": "Email is required."
-        }
-    )
-
-    password_hash = auto_field(
-        required=True,
-        load_only=True,
-        validate=validate.Length(min=6),
-        error_messages={
-            "required": "Password is required.",
-            "length": "Password must be at least 6 characters long."
-        }
-    )
-
-    role = auto_field(
-        required=False,
-        validate=validate.OneOf(["Admin", "User"]),
-        error_messages={
-            "one_of": "Role must be either 'Admin' or 'User'."
-        }
-    )
-
-    created_at = auto_field(dump_only=True)
-    updated_at = auto_field(dump_only=True)
-
-    # Custom validation for uniqueness
-    @validates('username')
-    def validate_username_unique(self, username):
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
-            raise ValidationError("A user with this username already exists.")
-
-    @validates('email')
-    def validate_email_unique(self, email):
-        existing_email = User.query.filter_by(email=email).first()
-        if existing_email:
-            raise ValidationError("A user with this email already exists.")
+    @validates("email")
+    def validate_email(self, value):
+        if "@" not in value or "." not in value:
+            raise ValidationError("Invalid email address.")

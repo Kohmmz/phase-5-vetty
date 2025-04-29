@@ -23,6 +23,7 @@ sqlalchemy = "*"
 marshmallow = "*"
 marshmallow-sqlalchemy = "*"
 faker = "*"
+stripe = "*"
 
 [dev-packages]
 
