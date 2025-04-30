@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app import db
-from app.models.ServiceRequest import ServiceRequest
+from app.models.Service_request import ServiceRequest
 from app.schemas.Servicerequest_schemas import ServiceRequestSchema
 
 # from app.models.Service import Service
