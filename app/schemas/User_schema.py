@@ -1,13 +1,13 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field, validates
-from marshmallow import ValidationError, validate
-from app.models.User import User  # Adjust import path if needed
+from marshmallow import ValidationError, fields
+from app.models.User import User  
 from app import db
 
 class UserSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = User
         load_instance = True
-        exclude = ("password_hash",)  # Exclude password hash from serialization
+        exclude = ("password_hash",)  
 
     password = fields.String(required=True, load_only=True)
     confirm_password = fields.String(required=True, load_only=True)
