@@ -14,3 +14,4 @@ class Service(db.Model):
     # Relationships
     service_requests = db.relationship('ServiceRequest', back_populates='service', lazy=True)
     order_items = db.relationship('OrderItem', back_populates='service', lazy=True)
+    cart_items = db.relationship('CartItem', back_populates='service', lazy=True)

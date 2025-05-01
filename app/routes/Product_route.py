@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, abort
 from app import db
-from models import Product
+from app.models.Product import Product
 
 product_bp = Blueprint('product_bp', __name__)
 

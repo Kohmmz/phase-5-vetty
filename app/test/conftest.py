@@ -1,5 +1,5 @@
 import pytest
-from app import db, create_app
+from app import create_app, db
 from app.models.User import User
 from flask_jwt_extended import create_access_token
 
@@ -32,10 +32,13 @@ def admin_token(test_client):
     db.session.commit()
     return create_access_token(identity={"id": admin.id, "role": admin.role})
 
-def test_get_all_users(test_client, admin_token):
+@pytest.fixture
+def user_token(test_client):
     """
-    Test retrieving all users (Admin only).
+    Fixture to create a test user and generate a valid JWT token.
     """
-    response = test_client.get('/admin/users', headers={"Authorization": f"Bearer {admin_token}"})
-    assert response.status_code == 200
-    assert isinstance(response.json, list)
+    user = User(username="testuser", email="testuser@example.com", role="User")
+    user.set_password("password123")
+    db.session.add(user)
+    db.session.commit()
+    return create_access_token(identity={"id": user.id, "role": user.role})
