@@ -37,21 +37,26 @@ def create_app():
         auth_bp,
         admin_bp,
         cart_bp,
+        cart_item_bp,
         product_bp,
         payment_bp,
         order_bp,
         service_bp,
         service_request_bp,
     )
+    # Import API documentation blueprint
+    from app.api_docs import api_docs_bp
 
     app.register_blueprint(user_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(cart_bp)
+    app.register_blueprint(cart_item_bp)
     app.register_blueprint(product_bp)
     app.register_blueprint(payment_bp)
     app.register_blueprint(order_bp)
     app.register_blueprint(service_bp)
     app.register_blueprint(service_request_bp)
+    app.register_blueprint(api_docs_bp)  # Register API docs blueprint
 
     return app

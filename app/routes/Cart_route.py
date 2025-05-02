@@ -30,12 +30,25 @@ class CartListResource(Resource):
     def post(self):
         data = request.get_json()
         try:
-            cart = cart_schema.load(data)
+            from datetime import datetime
+            now = datetime.now()
+            
+            cart = Cart(
+                user_id=data['user_id'],
+                updated_at=now
+            )
+            
+            db.session.add(cart)
+            db.session.commit()
+            return cart_schema.dump(cart), 201
         except ValidationError as err:
             return {"errors": err.messages}, 400
-        db.session.add(cart)
-        db.session.commit()
-        return cart_schema.dump(cart), 201
+        except KeyError as err:
+            return {"errors": f"Missing required field: {err}"}, 400
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating cart: {str(e)}")
+            return {"message": "Internal Server Error"}, 500
 
 api.add_resource(CartListResource, '')
 api.add_resource(CartResource, '/<int:cart_id>')

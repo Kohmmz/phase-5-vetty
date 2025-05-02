@@ -25,6 +25,7 @@ marshmallow-sqlalchemy = "*"
 faker = "*"
 stripe = "*"
 pillow = "*"
+flask-restx = "*"
 
 [dev-packages]
 
