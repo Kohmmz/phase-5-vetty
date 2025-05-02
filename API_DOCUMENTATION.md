@@ -17,23 +17,31 @@ This endpoint returns a comprehensive JSON object describing all available endpo
 The API is organized into the following sections:
 
 ### Authentication
-- `POST /signup` - Create a new user account
-- `POST /login` - Login with existing credentials
-- `POST /logout` - Logout the current user
+- `POST /auth/signup` - Create a new user account
+- `POST /auth/login` - Login with existing credentials
+- `POST /auth/logout` - Logout the current user
+- `GET /auth/auto-login` - Automatically login a user with a valid JWT token
 
 ### Users
 - `GET /users` - Get all users
 - `GET /users/{user_id}` - Get a specific user by ID
+- `PUT /users/{user_id}` - Update a user
+- `DELETE /users/{user_id}` - Delete a user
+- `POST /users/verify-otp` - Verify OTP for user email verification
 
 ### Products
 - `GET /products` - Get all products
 - `POST /products` - Create a new product
 - `GET /products/{product_id}` - Get a specific product by ID
+- `PUT /products/{product_id}` - Update a product
+- `DELETE /products/{product_id}` - Delete a product
 
 ### Services
 - `GET /services` - Get all services
 - `POST /services` - Create a new service
 - `GET /services/{service_id}` - Get a specific service by ID
+- `PUT /services/{service_id}` - Update a service
+- `DELETE /services/{service_id}` - Delete a service
 
 ### Carts
 - `GET /carts` - Get all carts
