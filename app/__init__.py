@@ -39,7 +39,7 @@ def create_app():
         cart_bp,
         cart_item_bp,
         product_bp,
-        payment_bp,
+        # payment_bp,
         order_bp,
         service_bp,
         service_request_bp,
@@ -53,7 +53,7 @@ def create_app():
     app.register_blueprint(cart_bp)
     app.register_blueprint(cart_item_bp)
     app.register_blueprint(product_bp)
-    app.register_blueprint(payment_bp)
+    # app.register_blueprint(payment_bp)
     app.register_blueprint(order_bp)
     app.register_blueprint(service_bp)
     app.register_blueprint(service_request_bp)
