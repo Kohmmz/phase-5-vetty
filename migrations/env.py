@@ -97,9 +97,12 @@ def run_migrations_online():
     connectable = get_engine()
 
     with connectable.connect() as connection:
+        # Configure Alembic context
         context.configure(
             connection=connection,
             target_metadata=get_metadata(),
+            # Disable foreign key constraint checking during migrations
+            render_as_batch=True,
             **conf_args
         )
 
