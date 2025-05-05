@@ -1,40 +1,42 @@
 
+#!/bin/bash
 set -o errexit
 
-# Install dependencies globally
+# Install dependencies
 pip install -r requirements.txt
-
-# Make sure gunicorn is installed
 pip install gunicorn
 
-# Check if migrations directory exists at the project root
-if [ -d "migrations" ]; then
-  MIGRATIONS_DIR="migrations"
-elif [ -d "app/migrations" ]; then
-  MIGRATIONS_DIR="app/migrations"
-else
-  # Create migrations directory if it doesn't exist
-  mkdir -p migrations/versions
-  MIGRATIONS_DIR="migrations"
-fi
-
-# Ensure versions directory exists
+# Setup migrations directory
+MIGRATIONS_DIR="migrations"
 mkdir -p "$MIGRATIONS_DIR/versions"
 
-# Reset alembic version in the database to avoid revision errors
-DATABASE_URL="$(grep DATABASE_URL app/.env | cut -d '=' -f2)"
+# Handle database operations - using the DATABASE_URL environment variable set by Render
 if [ -n "$DATABASE_URL" ]; then
+  # Extract password from DATABASE_URL for psql authentication
+  DB_PASSWORD=$(echo $DATABASE_URL | grep -oP '(?<=:)[^:@]+(?=@)')
+  
+  # Disable foreign key constraints during migrations
+  echo "Disabling foreign key constraints..."
+  PGPASSWORD=$DB_PASSWORD psql $DATABASE_URL -c "SET session_replication_role = 'replica';" || echo "Could not set replica mode, continuing anyway..."
+  
+  # Reset alembic version table
   echo "Resetting alembic_version table..."
-  PGPASSWORD="$(echo $DATABASE_URL | cut -d '@' -f1 | cut -d ':' -f3)" psql "$DATABASE_URL" -c "DELETE FROM alembic_version;" || echo "Could not reset alembic_version table, continuing anyway..."
+  PGPASSWORD=$DB_PASSWORD psql $DATABASE_URL -c "DROP TABLE IF EXISTS alembic_version;" || echo "Could not reset alembic_version table, continuing anyway..."
 fi
 
-# Initialize migrations if they don't exist
+# Initialize migrations
 python -m flask db init --directory="$MIGRATIONS_DIR" || echo "Migrations already initialized"
 
-# Create a fresh migration
+# Create fresh migration
 rm -rf "$MIGRATIONS_DIR/versions/*"
 python -m flask db migrate -m "initial migration" --directory="$MIGRATIONS_DIR"
 
-# Apply migrations to the database
+# Apply migrations
 python -m flask db upgrade --directory="$MIGRATIONS_DIR"
+
+# Re-enable foreign key constraints
+if [ -n "$DATABASE_URL" ]; then
+  echo "Re-enabling foreign key constraints..."
+  PGPASSWORD=$DB_PASSWORD psql $DATABASE_URL -c "SET session_replication_role = 'origin';" || echo "Could not reset to origin mode, continuing anyway..."
+fi
 

@@ -28,8 +28,9 @@ def create_app():
     jwt.init_app(app)
     migrate.init_app(app, db)
 
-    # Enable CORS for all routes and origins
-    CORS(app)
+    # Enable CORS for the production frontend URL
+    frontend_url = app.config.get('FRONTEND_URL', 'https://vetty-frontend.netlify.app')
+    CORS(app, origins=[frontend_url], supports_credentials=True)
 
     # Import and register all blueprints
     from app.routes import (
