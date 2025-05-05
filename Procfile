@@ -1,1 +1,1 @@
-web: pipenv run gunicorn app.wsgi:app
+web: gunicorn app.wsgi:app
