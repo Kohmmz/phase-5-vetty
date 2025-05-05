@@ -1,16 +1,22 @@
 
 set -o errexit
 
+# Install dependencies
 pip install pipenv
 pipenv install
+
+# Make sure gunicorn is installed
+pipenv install gunicorn
+
+# Clean up migrations directory to start fresh
+rm -rf migrations/versions/*
 
 # Initialize migrations if they don't exist
 pipenv run python -m flask db init || echo "Migrations already initialized"
 
-# Stamp the database with the current head revision
-pipenv run python -m flask db stamp head || echo "Failed to stamp database"
+# Create initial migration
+pipenv run python -m flask db migrate -m "initial migration"
 
-# Now run the migrations
-pipenv run python -m flask db migrate || echo "Failed to generate migrations"
-pipenv run python -m flask db upgrade || echo "Failed to upgrade database"
+# Apply migrations to the database
+pipenv run python -m flask db upgrade
 
