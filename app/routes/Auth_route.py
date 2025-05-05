@@ -50,3 +50,26 @@ def auto_login():
 @jwt_required()
 def logout():
     return jsonify({'message': 'Logout handled client-side by removing token'}), 200
+
+# Current User
+@auth_bp.route('/current_user', methods=['GET'])
+@jwt_required()
+def current_user():
+    current_user_id = get_jwt_identity()
+    # Extract the user ID if it's in a dictionary format
+    if isinstance(current_user_id, dict) and 'id' in current_user_id:
+        current_user_id = current_user_id['id']
+    
+    user = User.query.get(current_user_id)
+    
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+        
+    user_data = {
+        'id': user.id,
+        'email': user.email,
+        'username': user.username,
+        'role': user.role
+    }
+
+    return jsonify(user_data)
