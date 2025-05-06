@@ -1,4 +1,3 @@
-
 #!/bin/bash
 set -o errexit
 
@@ -13,19 +12,28 @@ mkdir -p "$MIGRATIONS_DIR/versions"
 # Initialize migrations if they don't exist
 python -m flask db init --directory="$MIGRATIONS_DIR" || echo "Migrations already initialized"
 
-# Run sync_migrations.py to reset the alembic_version table
+# Reset the alembic_version table
 python sync_migrations.py
 
-# Clear any existing migration versions and create fresh ones
-rm -rf "$MIGRATIONS_DIR/versions/*"
+# Check current database state
+echo "Checking current database state..."
+python -m flask db current --directory="$MIGRATIONS_DIR" || echo "No current revision"
 
-# Generate migrations
+# Clear existing migration versions
+echo "Clearing existing migration versions..."
+find "$MIGRATIONS_DIR/versions" -type f -delete
+
+# Stamp database as current
+echo "Stamping database as current..."
+python -m flask db stamp head --directory="$MIGRATIONS_DIR"
+
+# Generate new migration
+echo "Generating new migration..."
 python -m flask db migrate -m "initial migration" --directory="$MIGRATIONS_DIR"
 
-# Apply migrations with workaround for foreign key constraints
+# Apply the migration
+echo "Applying migrations..."
 python -m flask db upgrade --directory="$MIGRATIONS_DIR"
 
-# Create initial data if needed
-# Uncomment if you want to seed data on each deployment
+# Uncomment to seed data
 # python seed.py
-

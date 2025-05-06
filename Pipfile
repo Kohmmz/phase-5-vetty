@@ -28,6 +28,7 @@ pillow = "*"
 flask-restx = "*"
 gunicorn = "*"
 pyotp = "*"
+qrcode = "*"
 
 [dev-packages]
 

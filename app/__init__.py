@@ -28,16 +28,21 @@ def create_app():
     jwt.init_app(app)
     migrate.init_app(app, db)
 
-    # Enable CORS with support for any localhost URL
-    if app.config.get('DEBUG', False):
-        # In development mode, allow any origin
-        CORS(app, supports_credentials=True)
-    else:
-        # In production, only allow the production URL
-        production_url = app.config.get('FRONTEND_URL', 'https://vetty-frontend.netlify.app').split(',')[0].strip()
-        CORS(app, origins=[production_url], supports_credentials=True)
+    # Configure CORS
+    frontend_urls = app.config.get('FRONTEND_URLS', [])
+    local_urls = [
+        'http://localhost:3000',
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:5173',
+        'http://127.0.0.1:5174'
+    ]
+    all_allowed_origins = frontend_urls + local_urls
+    CORS(app, origins=all_allowed_origins, supports_credentials=True)
+    print(f"CORS enabled for: {all_allowed_origins}")
 
-    # Import and register all blueprints
+    # Import and register blueprints
     from app.routes import (
         user_bp,
         auth_bp,
@@ -50,7 +55,6 @@ def create_app():
         service_bp,
         service_request_bp,
     )
-    # Import API documentation blueprint
     from app.api_docs import api_docs_bp
 
     app.register_blueprint(user_bp)
@@ -63,6 +67,6 @@ def create_app():
     app.register_blueprint(order_bp)
     app.register_blueprint(service_bp)
     app.register_blueprint(service_request_bp)
-    app.register_blueprint(api_docs_bp)  # Register API docs blueprint
+    app.register_blueprint(api_docs_bp)
 
     return app
