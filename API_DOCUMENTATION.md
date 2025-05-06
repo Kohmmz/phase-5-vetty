@@ -7,10 +7,18 @@ This document provides information on how to access and use the API documentatio
 Once the application is running, you can access the API documentation in JSON format at:
 
 ```
-http://127.0.0.1:5001/api/docs/
+https://phase-5-vetty-backend.onrender.com/api/docs/
 ```
 
 This endpoint returns a comprehensive JSON object describing all available endpoints, their methods, required parameters, and expected responses.
+
+## API Base URL
+
+All API endpoints should be prefixed with the following base URL:
+
+```
+https://phase-5-vetty-backend.onrender.com/api
+```
 
 ## API Endpoints
 
@@ -60,7 +68,7 @@ The API is organized into the following sections:
 
 ### Creating a User
 ```json
-POST /signup
+POST /auth/signup
 {
   "username": "testuser",
   "email": "test@example.com",
@@ -105,7 +113,7 @@ POST /orders
 
 Most endpoints require authentication using JWT tokens. To authenticate:
 
-1. Make a POST request to `/login` with your credentials
+1. Make a POST request to `/auth/login` with your credentials
 2. Use the returned access token in subsequent requests by adding it to the Authorization header:
    ```
    Authorization: Bearer <your_token>
