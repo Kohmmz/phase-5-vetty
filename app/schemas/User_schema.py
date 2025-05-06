@@ -31,7 +31,7 @@ class UserSchema(SQLAlchemyAutoSchema):
         }
     )
 
-    password_hash = auto_field(
+    password = auto_field(
         required=True,
         load_only=True,
         validate=validate.Length(min=6),
@@ -50,7 +50,6 @@ class UserSchema(SQLAlchemyAutoSchema):
     )
 
     created_at = auto_field(dump_only=True)
-    updated_at = auto_field(dump_only=True)
 
     # Custom validation for uniqueness
     @validates('username')
