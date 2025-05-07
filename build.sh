@@ -1,37 +1,53 @@
 #!/bin/bash
 set -o errexit
 
+# Install dependencies
 echo "🔧 Installing dependencies..."
 pip install -r requirements.txt
 pip install gunicorn
 
-# Create a fresh migrations directory
+# Setup migrations directory
 MIGRATIONS_DIR="migrations"
 
-echo "🧹 Cleaning up existing migrations..."
-rm -rf "$MIGRATIONS_DIR"
-
-echo "📁 Creating fresh migrations directory..."
-mkdir -p "$MIGRATIONS_DIR/versions"
-touch "$MIGRATIONS_DIR/__init__.py"
-touch "$MIGRATIONS_DIR/versions/__init__.py"
-
-echo "⚙️ Initializing Alembic..."
-flask db init --directory="$MIGRATIONS_DIR"
-
-# Modify env.py to use render_as_batch=True for better SQLite compatibility
-ENV_PY="$MIGRATIONS_DIR/env.py"
-if [ -f "$ENV_PY" ]; then
-    echo "🛠️ Configuring migrations for better compatibility..."
-    # Add render_as_batch=True to context.configure call
-    sed -i 's/context.configure(/context.configure(render_as_batch=True, /g' "$ENV_PY"
+# Check if migrations directory already exists and has content
+if [ -d "$MIGRATIONS_DIR" ] && [ "$(ls -A "$MIGRATIONS_DIR")" ]; then
+    echo "📁 Using existing migrations directory..."
+else
+    echo "📁 Creating migrations directory..."
+    mkdir -p "$MIGRATIONS_DIR/versions"
+    
+    # Initialize migrations if they don't exist
+    echo "⚙️ Initializing Alembic..."
+    python -m flask db init --directory="$MIGRATIONS_DIR" || echo "Migrations already initialized"
+    
+    # Modify env.py to use render_as_batch=True for better compatibility
+    ENV_PY="$MIGRATIONS_DIR/env.py"
+    if [ -f "$ENV_PY" ]; then
+        echo "🛠️ Configuring migrations for better compatibility..."
+        # Add render_as_batch=True to context.configure calls
+        sed -i 's/context.configure(/context.configure(render_as_batch=True, /g' "$ENV_PY"
+    fi
 fi
 
-echo "🔍 Creating fresh migration..."
-flask db migrate -m "Initial migration" --directory="$MIGRATIONS_DIR"
+# Check current database state
+echo "🔍 Checking current database state..."
+python -m flask db current --directory="$MIGRATIONS_DIR" || echo "No current revision"
 
-echo "⬆️ Applying migration to the database..."
-flask db upgrade --directory="$MIGRATIONS_DIR"
+# Clear existing migration versions
+echo "🧹 Clearing existing migration versions..."
+find "$MIGRATIONS_DIR/versions" -type f -not -name "__init__.py" -delete
+
+# Stamp database as current
+echo "📌 Stamping database as current..."
+python -m flask db stamp head --directory="$MIGRATIONS_DIR"
+
+# Generate new migration
+echo "📝 Generating new migration..."
+python -m flask db migrate -m "initial migration" --directory="$MIGRATIONS_DIR"
+
+# Apply the migration
+echo "⬆️ Applying migrations..."
+python -m flask db upgrade --directory="$MIGRATIONS_DIR"
 
 # Create a seed admin user if needed
 echo "🌱 Creating admin user if needed..."
