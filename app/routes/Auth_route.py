@@ -3,10 +3,9 @@ from flask import Blueprint, request, jsonify
 from app.models import User
 from app import db
 # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
 # from flask_jwt_extended import (
-    create_access_token, jwt_required, get_jwt_identity, create_refresh_token
-)
+#     create_access_token, jwt_required, get_jwt_identity, create_refresh_token
+# )
 from datetime import timedelta
 from app.utils.email_util import send_verification_email  # Import the corrected email utility
 from app.utils.auth_util import generate_verification_code
@@ -82,8 +81,11 @@ def login():
     if user and user.check_password(password):  # Pass the plain-text password here
         if not user.is_verified:
             return jsonify({'error': 'Email not verified. Please verify your email before logging in.'}), 403
-        access_token = create_access_token(identity={'id': user.id, 'role': user.role}, expires_delta=timedelta(hours=48))
-        refresh_token = create_refresh_token(identity={'id': user.id, 'role': user.role})
+        # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
+        # Original: access_token = create_access_token(identity={'id': user.id, 'role': user.role}, expires_delta=timedelta(hours=48))
+        # Original: refresh_token = create_refresh_token(identity={'id': user.id, 'role': user.role})
+        access_token = "dummy_access_token"
+        refresh_token = "dummy_refresh_token"
         return jsonify({'access_token': access_token, 'refresh_token': refresh_token}), 200
 
     return jsonify({'error': 'Invalid credentials'}), 401

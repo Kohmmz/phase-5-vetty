@@ -7,7 +7,6 @@ from app.models.OrderItem import OrderItem
 from app.schemas.Order_schemas import OrderSchema
 from app.schemas.Orderitem_schemas import OrderItemSchema
 # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
 # from flask_jwt_extended import jwt_required, get_jwt_identity
 
 order_bp = Blueprint('order', __name__, url_prefix='/orders')
