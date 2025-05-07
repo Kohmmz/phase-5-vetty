@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
 from app.models.User import User
 from app.models.Order import Order
 from app.models.Product import Product

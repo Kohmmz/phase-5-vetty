@@ -1,10 +1,7 @@
 from flask import Blueprint, request, jsonify
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
 from app.models import User
 from app import db
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# from flask_jwt_extended import (
+from flask_jwt_extended import (
     create_access_token, jwt_required, get_jwt_identity, create_refresh_token
 )
 from datetime import timedelta
@@ -89,36 +86,21 @@ def login():
     return jsonify({'error': 'Invalid credentials'}), 401
 
 @auth_bp.route('/auto-login', methods=['GET'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def auto_login():
-    # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-
-    # Original: identity = 1  # JWT DISABLED: Replaced get_jwt_identity() with hardcoded user ID
-
-    # Using hardcoded user identity for testing without JWT
-
-    identity = {"id": 1, "role": "User"}
+    identity = get_jwt_identity()
     return jsonify({'user': identity}), 200
 
 @auth_bp.route('/logout', methods=['POST'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def logout():
     return jsonify({'message': 'Logout handled client-side by removing token'}), 200
 
 # Current User
 @auth_bp.route('/current_user', methods=['GET'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def current_user():
-    # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-
-    # Original: current_user_id = 1  # JWT DISABLED: Replaced get_jwt_identity() with hardcoded user ID
-
-    # Using hardcoded user_id for testing without JWT
-
-    current_user_id = 1  # Hardcoded user_id for testing
+    current_user_id = get_jwt_identity()
     # Extract the user ID if it's in a dictionary format
     if isinstance(current_user_id, dict) and 'id' in current_user_id:
         current_user_id = current_user_id['id']

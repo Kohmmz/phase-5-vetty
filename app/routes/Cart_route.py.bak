@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
 from marshmallow import ValidationError
 from app import db
 from app.models.Cart import Cart

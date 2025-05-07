@@ -1,14 +1,11 @@
 from flask import Blueprint, request, jsonify
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
 from marshmallow import ValidationError
 from app import db
 from app.models.Order import Order
 from app.models.OrderItem import OrderItem
 from app.schemas.Order_schemas import OrderSchema
 from app.schemas.Orderitem_schemas import OrderItemSchema
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 order_bp = Blueprint('order', __name__, url_prefix='/orders')
 
@@ -18,8 +15,7 @@ order_item_schema = OrderItemSchema()
 order_items_schema = OrderItemSchema(many=True)
 
 @order_bp.route('/<int:order_id>', methods=['GET'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def get_order(order_id):
     """
     Get a specific order by ID.
@@ -28,8 +24,7 @@ def get_order(order_id):
     return jsonify(order_schema.dump(order)), 200
 
 @order_bp.route('/<int:order_id>', methods=['PUT'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def update_order(order_id):
     """
     Update an existing order.
@@ -44,8 +39,7 @@ def update_order(order_id):
     return jsonify(order_schema.dump(order)), 200
 
 @order_bp.route('/<int:order_id>', methods=['DELETE'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def delete_order(order_id):
     """
     Delete an order by ID.
@@ -56,37 +50,23 @@ def delete_order(order_id):
     return "", 204
 
 @order_bp.route('', methods=['GET'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def get_orders():
     """
     Get all orders for the authenticated user.
     """
-    # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-
-    # Original: current_user = 1  # JWT DISABLED: Replaced get_jwt_identity() with hardcoded user ID
-
-    # Using hardcoded user identity for testing without JWT
-
-    current_user = {"id": 1, "role": "User"}
+    current_user = get_jwt_identity()
     orders = Order.query.filter_by(user_id=current_user["id"]).all()
     return jsonify(orders_schema.dump(orders)), 200
 
 @order_bp.route('', methods=['POST'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def create_order():
     """
     Create a new order.
     """
     data = request.get_json()
-    # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-
-    # Original: current_user = 1  # JWT DISABLED: Replaced get_jwt_identity() with hardcoded user ID
-
-    # Using hardcoded user identity for testing without JWT
-
-    current_user = {"id": 1, "role": "User"}
+    current_user = get_jwt_identity()
 
     # Validate and create the order
     try:
@@ -112,8 +92,7 @@ def create_order():
         return jsonify({"errors": err.messages}), 400
 
 @order_bp.route('/<int:order_id>/items', methods=['GET'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def get_order_items(order_id):
     """
     Get all items for a specific order.

@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
 from marshmallow import ValidationError
 from app import db
 from app.models.User import User
@@ -12,9 +11,7 @@ import qrcode
 from io import BytesIO
 import base64
 from app.utils.auth_util import role_required
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 user_bp = Blueprint('user', __name__, url_prefix='/users')
 
@@ -115,16 +112,9 @@ def verify_otp():
     return jsonify({"error": "Invalid OTP."}), 400
 
 @user_bp.route('/enable-2fa', methods=['POST'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def enable_2fa():
-    # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-
-    # Original: user_id = 1  # JWT DISABLED: Replaced get_jwt_identity() with hardcoded user ID['id']
-
-    # Using hardcoded user_id for testing without JWT
-
-    user_id = 1  # Hardcoded user_id for testing
+    user_id = get_jwt_identity()['id']
     user = db.session.get(User, user_id)
 
     # Generate a unique secret key for TOTP
@@ -159,16 +149,9 @@ def enable_2fa():
     }), 200
 
 @user_bp.route('/disable-2fa', methods=['DELETE'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def disable_2fa():
-    # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-
-    # Original: user_id = 1  # JWT DISABLED: Replaced get_jwt_identity() with hardcoded user ID['id']
-
-    # Using hardcoded user_id for testing without JWT
-
-    user_id = 1  # Hardcoded user_id for testing
+    user_id = get_jwt_identity()['id']
     user = db.session.get(User, user_id)
     user.is_2fa_enabled = False
     user.two_fa_secret = None
@@ -176,16 +159,9 @@ def disable_2fa():
     return jsonify({"message": "Two-factor authentication disabled."}), 200
 
 @user_bp.route('/verify-2fa', methods=['POST'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def verify_2fa():
-    # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-
-    # Original: user_id = 1  # JWT DISABLED: Replaced get_jwt_identity() with hardcoded user ID['id']
-
-    # Using hardcoded user_id for testing without JWT
-
-    user_id = 1  # Hardcoded user_id for testing
+    user_id = get_jwt_identity()['id']
     user = db.session.get(User, user_id)
     data = request.get_json()
     token = data.get("token")

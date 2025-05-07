@@ -1,12 +1,9 @@
 from flask import Blueprint, request, jsonify
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
 from marshmallow import ValidationError
 from app import db
 from app.models.CartItem import CartItem
 from app.schemas.CartItem_schema import CartItemSchema
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 cart_item_bp = Blueprint('cart_item', __name__, url_prefix='/carts/items')
 
@@ -14,8 +11,7 @@ cart_item_schema = CartItemSchema()
 cart_items_schema = CartItemSchema(many=True)
 
 @cart_item_bp.route('/<int:item_id>', methods=['GET'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def get_cart_item(item_id):
     """Get a cart item by ID"""
     try:
@@ -26,8 +22,7 @@ def get_cart_item(item_id):
         return jsonify({"error": "Error retrieving cart item"}), 500
 
 @cart_item_bp.route('/<int:item_id>', methods=['PUT'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def update_cart_item(item_id):
     """Update a cart item"""
     try:
@@ -45,8 +40,7 @@ def update_cart_item(item_id):
         return jsonify({"error": "Error updating cart item"}), 500
 
 @cart_item_bp.route('/<int:item_id>', methods=['DELETE'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def delete_cart_item(item_id):
     """Delete a cart item"""
     try:
@@ -60,8 +54,7 @@ def delete_cart_item(item_id):
         return jsonify({"error": "Error deleting cart item"}), 500
 
 @cart_item_bp.route('', methods=['POST'])
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# @jwt_required()
+@jwt_required()
 def add_cart_item():
     """Add an item to a cart"""
     try:

@@ -1,9 +1,6 @@
 from flask import Flask
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
 from flask_sqlalchemy import SQLAlchemy
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -14,8 +11,7 @@ load_dotenv()
 
 # Initialize extensions
 db = SQLAlchemy()
-# JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# jwt = JWTManager()
+jwt = JWTManager()
 migrate = Migrate()
 
 def create_app():
@@ -29,8 +25,7 @@ def create_app():
 
     # Initialize extensions with the app
     db.init_app(app)
-    # JWT DISABLED TEMPORARILY FOR ROUTE TESTING
-# jwt.init_app(app)
+    jwt.init_app(app)
     migrate.init_app(app, db)
 
     # Configure CORS
