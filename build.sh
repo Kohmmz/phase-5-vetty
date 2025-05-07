@@ -20,12 +20,11 @@ else
     echo "⚙️ Initializing Alembic..."
     python -m flask db init --directory="$MIGRATIONS_DIR" || echo "Migrations already initialized"
     
-    # Modify env.py to use render_as_batch=True for better compatibility
+    # Ensure env.py is properly configured for PostgreSQL
     ENV_PY="$MIGRATIONS_DIR/env.py"
     if [ -f "$ENV_PY" ]; then
-        echo "🛠️ Configuring migrations for better compatibility..."
-        # Add render_as_batch=True to context.configure calls
-        sed -i 's/context.configure(/context.configure(render_as_batch=True, /g' "$ENV_PY"
+        echo "🛠️ Configuring migrations for PostgreSQL..."
+        # No need to modify for PostgreSQL as it's the default
     fi
 fi
 

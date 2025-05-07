@@ -51,8 +51,8 @@ def run_migrations_offline():
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url, target_metadata=get_metadata(), literal_binds=True,
-        render_as_batch=True  # Add this for better handling of foreign key constraints
+        url=url, target_metadata=get_metadata(), literal_binds=True
+        # PostgreSQL handles foreign key constraints properly by default
     )
 
     with context.begin_transaction():
@@ -81,11 +81,9 @@ def run_migrations_online():
     connectable = get_engine()
 
     with connectable.connect() as connection:
-        # Add render_as_batch=True to handle foreign key constraints
         context.configure(
             connection=connection,
             target_metadata=get_metadata(),
-            render_as_batch=True,  # Add this for better handling of foreign key constraints
             **conf_args
         )
 
