@@ -2,10 +2,6 @@
 
 This document provides information on how to access and use the API for the Vetty Backend application deployed at Render.
 
-## API Status (Updated: May 7, 2025)
-
-The API is **PARTIALLY WORKING** with a 61.9% success rate based on comprehensive testing. Most read-only endpoints are functioning correctly, while endpoints requiring authentication may have issues.
-
 ### ✅ Confirmed Working Endpoints
 
 - `GET /products` - Returns all products successfully
@@ -28,7 +24,7 @@ https://phase-5-vetty-backend.onrender.com
 
 The API is organized into the following sections. Please note that while all endpoints are documented here, only the endpoints marked with ✅ have been confirmed working in the current deployment.
 
-### Authentication (⚠️ Authentication currently has issues)
+### Authentication (⚠️ Authentication currently in the works)
 - `POST /auth/signup` - Create a new user account
 - `POST /auth/login` - Login with existing credentials
 - `POST /auth/logout` - Logout the current user
@@ -171,6 +167,6 @@ This API is deployed on Render with a PostgreSQL database. The following informa
 
 ## Known Issues
 
-1. Authentication endpoints are currently not working as expected
+1. Authentication endpoints are currently still being tested
 2. Endpoints requiring authentication cannot be tested without a valid token
-3. Some POST operations may result in 500 Internal Server Error due to database issues
+3. Some POST operations may result in 500 Internal Server Error due to database issues/praying for a miracle isnt not the case.

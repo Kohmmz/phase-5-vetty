@@ -1,39 +1,29 @@
 #!/bin/bash
 set -o errexit
 
-# Install dependencies
+echo "🔧 Installing dependencies..."
 pip install -r requirements.txt
 pip install gunicorn
 
-# Setup migrations directory
 MIGRATIONS_DIR="migrations"
-mkdir -p "$MIGRATIONS_DIR/versions"
 
-# Initialize migrations if they don't exist
-python -m flask db init --directory="$MIGRATIONS_DIR" || echo "Migrations already initialized"
+echo "📁 Ensuring migrations directory exists..."
+if [ ! -d "$MIGRATIONS_DIR" ]; then
+  echo "⚙️ Initializing Alembic..."
+  flask db init --directory="$MIGRATIONS_DIR"
+fi
 
-# Reset the alembic_version table
-python sync_migrations.py
+echo "🔍 Checking database revision..."
+flask db current --directory="$MIGRATIONS_DIR" || echo "No current revision found."
 
-# Check current database state
-echo "Checking current database state..."
-python -m flask db current --directory="$MIGRATIONS_DIR" || echo "No current revision"
+echo "🛠️ Generating migration based on models..."
+flask db migrate -m "Auto migration" --directory="$MIGRATIONS_DIR"
 
-# Clear existing migration versions
-echo "Clearing existing migration versions..."
-find "$MIGRATIONS_DIR/versions" -type f -delete
+echo "⬆️ Applying migration to the database..."
+flask db upgrade --directory="$MIGRATIONS_DIR"
 
-# Stamp database as current
-echo "Stamping database as current..."
-python -m flask db stamp head --directory="$MIGRATIONS_DIR"
-
-# Generate new migration
-echo "Generating new migration..."
-python -m flask db migrate -m "initial migration" --directory="$MIGRATIONS_DIR"
-
-# Apply the migration
-echo "Applying migrations..."
-python -m flask db upgrade --directory="$MIGRATIONS_DIR"
-
-# Uncomment to seed data
+# Optional: Uncomment to seed data
+# echo "🌱 Seeding database..."
 # python seed.py
+
+echo "✅ Migration complete."
